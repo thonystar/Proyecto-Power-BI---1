@@ -1,0 +1,62 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "77c018604e0580630c60",
+  "displayName": "Overview",
+  "displayOption": "FitToPage",
+  "height": 2400,
+  "width": 4200,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "image": {
+            "image": {
+              "name": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Slide 16_9 - 1 (1).png'"
+                  }
+                }
+              },
+              "url": {
+                "expr": {
+                  "ResourcePackageItem": {
+                    "PackageName": "RegisteredResources",
+                    "PackageType": 1,
+                    "ItemName": "Slide_16_9_-_1_(1)21560755935945086.png"
+                  }
+                }
+              },
+              "scaling": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Fit'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "1d302e081139e520a7c9",
+      "target": "ae6ce0e6cc39059b0d2a",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1d302e081139e520a7c9",
+      "target": "a759a82c1c55e4490ac0",
+      "type": "NoFilter"
+    }
+  ]
+}

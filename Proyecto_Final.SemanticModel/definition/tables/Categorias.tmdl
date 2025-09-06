@@ -1,0 +1,46 @@
+table Categorias
+	lineageTag: 44426f5f-8a59-4ca1-8367-5c770baa1649
+
+	column Parámetro
+		lineageTag: 0805feda-9c54-423d-98cc-53c8f1d4030c
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		lineageTag: 0feca941-8f2b-4317-b575-7c55f2c7068a
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		formatString: 0
+		lineageTag: bdd7a14a-2e9e-4a36-acba-18c80a8ae3d3
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Categorias = calculated
+		mode: import
+		source =
+				{
+				    ("Producto", NAMEOF('Dim_producto'[Producto]), 0),
+				    ("Segmento", NAMEOF('Dim_segmento'[Segmento]), 1)
+				}
+
+	annotation PBI_Id = f089904116cc417d983c93a7ccdb58f7
+

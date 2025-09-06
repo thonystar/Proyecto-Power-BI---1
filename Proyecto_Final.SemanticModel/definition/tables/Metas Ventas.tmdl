@@ -1,0 +1,65 @@
+table 'Metas Ventas'
+	lineageTag: 15bfc72d-726d-4431-b8a4-9dfe319c120b
+
+	column Año
+		formatString: 0
+		lineageTag: 940bec80-309f-40eb-abf6-a61ef5e3575f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		formatString: 0
+		lineageTag: 45fe2976-57fa-4396-830b-89f2823f9c1a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Meta
+		formatString: 0
+		lineageTag: 46a0a9a0-1cee-431f-bec1-b9c8f01dff49
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Meta]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Periodo
+		formatString: 0
+		lineageTag: 62a6c9dd-638f-4829-b2eb-5c9c4953c58a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Periodo]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Metas Ventas' = calculated
+		mode: import
+		source = ```
+				DATATABLE("Año", INTEGER, "Mes", INTEGER, "Periodo", INTEGER, "Meta",INTEGER,
+				    {
+				        {2013, 9, 201309, 350000},
+				        {2013, 10, 201310, 370000},
+				        {2013, 11, 201311, 390000}, 
+				        {2013, 12, 201312, 410000},
+				        {2014, 1,  201401, 480000},
+				        {2014, 2, 201402, 520000},
+				        {2014, 3, 201403, 550000},
+				        {2014, 4, 201404, 600000},
+				        {2014, 5, 201405, 620000},
+				        {2014, 6, 201406, 670000},
+				        {2014, 7, 201407, 710000},
+				        {2014, 8, 201408, 760000},
+				        {2014, 9, 201409, 820000},
+				        {2014, 10, 201410, 880000},
+				        {2014, 11, 201411, 940000},
+				        {2014, 12, 201412, 1000000}
+				    })
+				```
+
+	annotation PBI_Id = 074a8d9654504890aed7b3abad20029a
+

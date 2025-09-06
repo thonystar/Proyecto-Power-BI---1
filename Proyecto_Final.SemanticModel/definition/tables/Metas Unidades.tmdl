@@ -1,0 +1,34 @@
+table 'Metas Unidades'
+	lineageTag: 1694b9ab-b52f-4468-ac8b-450c33c6c4f6
+
+	column Meta
+		formatString: 0
+		lineageTag: 510bab28-1737-49e5-a419-26471a0a8646
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Meta]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		formatString: 0
+		lineageTag: f19a7fbe-9ba0-498c-9f00-acc24ba3df4c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Metas Unidades' = calculated
+		mode: import
+		source = ```
+				DATATABLE("Año", INTEGER, "Meta", INTEGER, 
+				    {
+				        {2013,350000},
+				        {2014,600000}
+				    }
+				)
+				```
+
+	annotation PBI_Id = 88486776d12f486e86ac12793367cbea
+

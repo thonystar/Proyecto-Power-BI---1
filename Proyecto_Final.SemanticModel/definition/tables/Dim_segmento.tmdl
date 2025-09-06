@@ -1,0 +1,35 @@
+table Dim_segmento
+	lineageTag: 4e7a9189-4892-4b2c-ac05-68bc06e4e85b
+
+	column ID_Segmento
+		dataType: int64
+		formatString: 0
+		lineageTag: 197769c1-310b-4699-999d-f15c4bb21a1e
+		summarizeBy: none
+		sourceColumn: ID_Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: 92aa3389-b964-4f50-a7aa-fde1b5303069
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_segmento = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents("C:\Users\USER\OneDrive\Desktop\Proyectos\Power BI\Clases\Clase1\Archivos\Dim_segmento.csv"),[Delimiter=";", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"ID_Segmento", Int64.Type}, {"Segmento", type text}, {"", type text}, {"_1", type text}, {"_2", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"", "_1", "_2"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

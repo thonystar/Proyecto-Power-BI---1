@@ -1,0 +1,17 @@
+table KPI_Names
+	lineageTag: 8c5d295e-3af5-40c0-a4e8-13767e90878b
+
+	column KPI
+		lineageTag: a3683e81-0cbd-4311-8f62-dbcd2289fffa
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [KPI]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition KPI_Names = calculated
+		mode: import
+		source = DATATABLE("KPI", STRING, {{"Cantidad Vendida"}})
+
+	annotation PBI_Id = e7a5f57979e8406c85cb9eab86aa4329
+

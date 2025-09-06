@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "a1faa1af8921309a4698",
+  "position": {
+    "x": 511.84352813954581,
+    "y": 252.76223611829423,
+    "z": 15000,
+    "height": 266.36246227925466,
+    "width": 707.73426113122389,
+    "tabOrder": 14000
+  },
+  "visualGroup": {
+    "displayName": "Ventas Brutas",
+    "groupMode": "ScaleMode"
+  }
+}

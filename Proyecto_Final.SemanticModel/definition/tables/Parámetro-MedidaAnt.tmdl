@@ -1,0 +1,45 @@
+table Parámetro-MedidaAnt
+	lineageTag: f36ac9ef-a359-498d-bb52-571bf887a336
+
+	column Parámetro
+		lineageTag: a5f94824-4aff-43c0-8351-bd14e38bfe36
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		lineageTag: 2388b01e-2967-469f-8933-6604f0edbff3
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		formatString: 0
+		lineageTag: 013a05ed-a296-4013-a37d-c7066ce40d1b
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parámetro-MedidaAnt = calculated
+		mode: import
+		source =
+				{
+				    ("ValorParametroAnt", NAMEOF('Medidas'[ValorParametroAnt]), 0)
+				}
+
+	annotation PBI_Id = 29f97018cfd3446680b7911469090e77
+

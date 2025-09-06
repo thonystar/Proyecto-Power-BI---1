@@ -1,0 +1,47 @@
+table Parametro-Medidas
+	lineageTag: 367b7000-3b6d-4b54-8aa3-738d9f181560
+
+	column Parámetro
+		lineageTag: d300e2a5-9273-403c-b3a3-e99364d8e6be
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		lineageTag: fb83f7ae-209d-4254-864e-1b58057d9aaa
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		formatString: 0
+		lineageTag: b7ca0841-53b4-435f-ab84-faaa955c13f0
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parametro-Medidas = calculated
+		mode: import
+		source =
+				{
+				    ("Cant. Vend", NAMEOF('Medidas'[Cantidad Vendida]), 2),
+				    ("V. Brutas", NAMEOF('Medidas'[Ventas]), 0),
+				    ("V. Netas", NAMEOF('Medidas'[Ventas Netas]), 1)
+				}
+
+	annotation PBI_Id = be7749682e2645acb563a315335273c0
+

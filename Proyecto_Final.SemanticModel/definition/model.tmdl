@@ -1,0 +1,39 @@
+model Model
+	culture: es-MX
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-PE
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Fact_Sales","Dim_producto","Dim_segmento","Dim_Country","Dim_Band","Medidas"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBIDesktopVersion = 2.146.1254.0 (25.08)+791a7518fadc83da883d79322a2658aff57c8db3
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Fact_Sales
+ref table Dim_producto
+ref table Dim_segmento
+ref table Dim_Country
+ref table Dim_Band
+ref table tbcalendario
+ref table Medidas
+ref table KPI_Names
+ref table 'Metas Unidades'
+ref table 'Metas Ventas'
+ref table Categorias
+ref table Regiones
+ref table Parametro-Medidas
+ref table Pais-Parametro
+ref table Producto-Parametro
+ref table Parámetro-Segmento
+ref table Parámetro-MedidaAnt
+ref table Parámetro-Var
+ref table 'Parámetro - Producto2'
+ref table Parámetro-Diferencia
+
+ref cultureInfo es-MX
+

@@ -1,0 +1,30 @@
+relationship 583e1591-5958-ceca-626f-e654aedb1597
+	fromColumn: Fact_Sales.ID_country
+	toColumn: Dim_Country.ID_pais
+
+relationship 38c685bc-ba4a-cf02-0175-332fb55a65a8
+	fromColumn: Fact_Sales.ID_Segment
+	toColumn: Dim_segmento.ID_Segmento
+
+relationship 1dda9f58-0a99-32e2-6389-75cef734798c
+	fromColumn: Fact_Sales.' ID_Product '
+	toColumn: Dim_producto.ID_Producto
+
+relationship 32b5bbca-c2db-3f00-0411-c6253757289c
+	fromColumn: Fact_Sales.ID_Band
+	toColumn: Dim_Band.ID_Banda
+
+relationship 9e9f8534-2673-ec6c-cddd-295ca9b534d1
+	crossFilteringBehavior: bothDirections
+	fromColumn: tbcalendario.Año
+	toColumn: 'Metas Unidades'.Año
+
+relationship 8eb130ab-7fb1-64ca-0223-922b61703ed8
+	fromColumn: Fact_Sales.Date
+	toColumn: tbcalendario.Fecha
+
+relationship 5e42bc05-b36f-cb6c-64ee-1641fb4d5f1c
+	crossFilteringBehavior: bothDirections
+	fromColumn: tbcalendario.Periodo
+	toColumn: 'Metas Ventas'.Periodo
+

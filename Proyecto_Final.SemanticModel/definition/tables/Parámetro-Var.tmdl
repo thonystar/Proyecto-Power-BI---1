@@ -1,0 +1,49 @@
+table Parámetro-Var
+	lineageTag: 8e5956c2-17cc-400c-afc9-732cb988968b
+
+	column Parámetro-Var
+		lineageTag: f662da16-ff45-44d7-8a59-64c8693237f9
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro-Var Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro-Var Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro-Var Campos'
+		isHidden
+		lineageTag: e1345758-2cc8-416b-a1d4-9b2d4a8967cb
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro-Var Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro-Var Orden'
+		isHidden
+		formatString: 0
+		lineageTag: 9207c1b0-d1e1-42c5-9165-727a621bcd7c
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parámetro-Var = calculated
+		mode: import
+		source =
+				{
+				    ("Var Cantidad %", NAMEOF('Medidas'[Var Cantidad %]), 0),
+				    ("Ventas YoY %", NAMEOF('Medidas'[Ventas YoY %]), 1),
+				    ("Var Ventas Netas", NAMEOF('Medidas'[Var Ventas Netas]), 2)
+				}
+
+	annotation PBI_Id = c153620d47f1438b820749a66ff1f047
+

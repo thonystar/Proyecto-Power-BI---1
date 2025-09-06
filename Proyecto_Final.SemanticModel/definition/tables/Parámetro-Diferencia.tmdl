@@ -1,0 +1,47 @@
+table Parámetro-Diferencia
+	lineageTag: fee55950-8f58-46aa-8fb9-b80c58cfaf11
+
+	column Parámetro
+		lineageTag: 99294bf7-55a2-4998-9d66-344af816205c
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		isHidden
+		lineageTag: 607fa57e-6ede-47e6-93af-67531aed17cc
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		isHidden
+		formatString: 0
+		lineageTag: 4eb57359-6f39-4e04-9c66-4ca845a0a860
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parámetro-Diferencia = calculated
+		mode: import
+		source =
+				{
+				    ("Diferencia", NAMEOF('Medidas'[Diferencia]), 0)
+				}
+
+	annotation PBI_Id = c8867850815243b0afea176191233663
+

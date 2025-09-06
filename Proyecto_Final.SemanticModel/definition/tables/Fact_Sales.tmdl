@@ -1,0 +1,157 @@
+table Fact_Sales
+	lineageTag: c52551d1-ec81-441e-8685-be9095af3d88
+
+	column ID_Segment
+		dataType: int64
+		formatString: 0
+		lineageTag: 56de1237-b7fc-42de-ab01-23019e179751
+		summarizeBy: none
+		sourceColumn: ID_Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_country
+		dataType: int64
+		formatString: 0
+		lineageTag: 57d052b4-c3d1-49b8-9f7a-545697fb7a20
+		summarizeBy: none
+		sourceColumn: ID_country
+
+		annotation SummarizationSetBy = Automatic
+
+	column ' ID_Product '
+		dataType: int64
+		formatString: 0
+		lineageTag: 46d3ce3c-309c-4ec5-af32-aa57b079dfec
+		summarizeBy: none
+		sourceColumn: " ID_Product "
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Band
+		dataType: int64
+		formatString: 0
+		lineageTag: bd659712-1a50-428c-9fbe-9a136f710212
+		summarizeBy: none
+		sourceColumn: ID_Band
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Units Sold'
+		dataType: int64
+		lineageTag: 644ce0db-7302-45ad-9fa8-a53320ab736e
+		summarizeBy: sum
+		sourceColumn: Units Sold
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Sale Price'
+		dataType: int64
+		formatString: 0
+		lineageTag: dfac01f1-b100-438c-9945-48aaa4c38ddc
+		summarizeBy: sum
+		sourceColumn: Sale Price
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Gross Sales'
+		dataType: double
+		lineageTag: e969f18c-f27f-4577-90e2-a300f727b305
+		summarizeBy: sum
+		sourceColumn: Gross Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Sales
+		dataType: double
+		lineageTag: 0302f8a4-8d06-438b-8e9f-93dbf556f728
+		summarizeBy: sum
+		sourceColumn: Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column COGS
+		dataType: double
+		lineageTag: 1d9b6f61-7c9e-449d-b10e-d18d870750b3
+		summarizeBy: sum
+		sourceColumn: COGS
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Date
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 453ff348-f7dd-4fdb-b42a-e9afa6837f86
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Ganancia
+		dataType: double
+		lineageTag: 89d0b17d-8859-4122-aa37-31f900635847
+		summarizeBy: sum
+		sourceColumn: Ganancia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'ID Transacción'
+		dataType: int64
+		formatString: 0
+		lineageTag: 87b470b9-671e-4127-852e-1a11e2443c40
+		summarizeBy: sum
+		sourceColumn: ID Transacción
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_Sales = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents("C:\Users\USER\OneDrive\Desktop\Proyectos\Power BI\Clases\Clase1\Archivos\Fact_Sales.csv"),[Delimiter=";", Columns=15, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{" Sale Price ", type text}}),
+				    #"Dividir columna por delimitador" = Table.SplitColumn(#"Tipo cambiado", " Sale Price ", Splitter.SplitTextByEachDelimiter({"$"}, QuoteStyle.Csv, false), {" Sale Price .1", " Sale Price .2"}),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Dividir columna por delimitador",{{"ID_Segment", Int64.Type}, {"ID_country", Int64.Type}, {" ID_Product ", Int64.Type}, {"ID_Band", Int64.Type}, {"Units Sold", type number}, {" Sale Price .1", type text}, {" Sale Price .2", Int64.Type}, {" Gross Sales ", type text}, {" Discounts ", type text}, {"  Sales ", type text}, {" COGS ", type text}, {" Profit ", type text}, {"Date", type date}, {"Month Number", Int64.Type}, {" Month Name ", type text}, {"Year", Int64.Type}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado1",{" Sale Price .1"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas quitadas",{{" Sale Price .2", "Sale Price"}}),
+				    #"Dividir columna por delimitador1" = Table.SplitColumn(#"Columnas con nombre cambiado", " Gross Sales ", Splitter.SplitTextByEachDelimiter({"$"}, QuoteStyle.Csv, false), {" Gross Sales .1", " Gross Sales .2"}),
+				    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Dividir columna por delimitador1",{{" Gross Sales .1", type text}, {" Gross Sales .2", type number}}),
+				    #"Columnas quitadas1" = Table.RemoveColumns(#"Tipo cambiado2",{" Discounts ", " Gross Sales .1"}),
+				    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Columnas quitadas1",{{" Gross Sales .2", "Gross Sales"}}),
+				    #"Dividir columna por delimitador2" = Table.SplitColumn(#"Columnas con nombre cambiado1", "  Sales ", Splitter.SplitTextByEachDelimiter({"$"}, QuoteStyle.Csv, false), {"  Sales .1", "  Sales .2"}),
+				    #"Tipo cambiado3" = Table.TransformColumnTypes(#"Dividir columna por delimitador2",{{"  Sales .1", type text}, {"  Sales .2", type number}}),
+				    #"Columnas quitadas2" = Table.RemoveColumns(#"Tipo cambiado3",{"  Sales .1"}),
+				    #"Columnas con nombre cambiado2" = Table.RenameColumns(#"Columnas quitadas2",{{"  Sales .2", "Sales"}}),
+				    #"Filas filtradas" = Table.SelectRows(#"Columnas con nombre cambiado2", each true),
+				    #"Dividir columna por delimitador3" = Table.SplitColumn(#"Filas filtradas", " COGS ", Splitter.SplitTextByEachDelimiter({"$"}, QuoteStyle.Csv, false), {" COGS .1", " COGS .2"}),
+				    #"Tipo cambiado4" = Table.TransformColumnTypes(#"Dividir columna por delimitador3",{{" COGS .1", type text}, {" COGS .2", type number}}),
+				    #"Columnas quitadas3" = Table.RemoveColumns(#"Tipo cambiado4",{" COGS .1"}),
+				    #"Columnas con nombre cambiado3" = Table.RenameColumns(#"Columnas quitadas3",{{" COGS .2", "COGS"}}),
+				    #"Personalizada agregada" = Table.AddColumn(#"Columnas con nombre cambiado3", "Ganancia", each [Sales] - [COGS]),
+				    #"Columnas quitadas4" = Table.RemoveColumns(#"Personalizada agregada",{" Profit ", "Month Number", " Month Name ", "Year"}),
+				    #"Tipo cambiado5" = Table.TransformColumnTypes(#"Columnas quitadas4",{{"Ganancia", type number}, {"Units Sold", Int64.Type}}),
+				    #"Índice agregado" = Table.AddIndexColumn(#"Tipo cambiado5", "Índice", 1, 1, Int64.Type),
+				    #"Columnas con nombre cambiado4" = Table.RenameColumns(#"Índice agregado",{{"Índice", "ID Transacción"}}),
+				    #"Consultas combinadas" = Table.NestedJoin(#"Columnas con nombre cambiado4", {" ID_Product "}, Dim_producto, {"ID_Producto"}, "Dim_producto", JoinKind.LeftOuter)
+				in
+				    #"Consultas combinadas"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,45 @@
+table Pais-Parametro
+	lineageTag: 6f41d338-6879-49f2-ac27-97019c001a44
+
+	column Parámetro
+		lineageTag: 7dff0adc-1cb7-4737-933d-36d315f8a2f7
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		lineageTag: 8a0fc047-2be1-4fef-b0c6-f939755b4cbb
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		formatString: 0
+		lineageTag: c6475566-c6c6-4bc4-834b-b76bff17c102
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Pais-Parametro = calculated
+		mode: import
+		source =
+				{
+				    ("Pais", NAMEOF('Dim_Country'[Pais]), 0)
+				}
+
+	annotation PBI_Id = 95d6df46afd74ba695d75663ec7a86e9
+

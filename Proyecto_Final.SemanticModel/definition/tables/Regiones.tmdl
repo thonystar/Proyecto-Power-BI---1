@@ -1,0 +1,46 @@
+table Regiones
+	lineageTag: 00f3b4a6-2123-4247-b04f-49b7b1f041f2
+
+	column Parámetro
+		lineageTag: 80be08be-2f0d-4991-83d3-ace7d27a3dec
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		lineageTag: bdc18a8b-a5ab-4448-9c67-3c833a1478cd
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		formatString: 0
+		lineageTag: ac159f39-3e58-4e75-8d1d-ff2672753f0f
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Regiones = calculated
+		mode: import
+		source =
+				{
+				    ("Pais ", NAMEOF('Dim_Country'[Pais2]), 0),
+				    ("Región", NAMEOF('Dim_Country'[Región]), 1)
+				}
+
+	annotation PBI_Id = 852e883929c84a2887c8e5a855c60dc8
+

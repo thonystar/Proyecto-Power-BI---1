@@ -1,0 +1,45 @@
+table Parámetro-Segmento
+	lineageTag: 450d2d80-c96f-4179-a9bd-0221eff8d178
+
+	column Parámetro
+		lineageTag: e0957ab6-0ac6-48ca-92f6-c79ff1effacb
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		lineageTag: 37d56fd7-2837-4eec-82f0-28be21a7a8eb
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		formatString: 0
+		lineageTag: e85cfdd6-5db3-405e-aee9-79d19a6e48e3
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parámetro-Segmento = calculated
+		mode: import
+		source =
+				{
+				    ("Segmento", NAMEOF('Dim_segmento'[Segmento]), 0)
+				}
+
+	annotation PBI_Id = 71eaef49a560455e8ac61b3a9a20114b
+

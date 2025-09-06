@@ -1,0 +1,151 @@
+table tbcalendario
+	lineageTag: fccfd250-5e9f-4ac1-9fb7-88f06d6724de
+	dataCategory: Time
+
+	column Año
+		formatString: 0
+		lineageTag: 465a638d-a964-4923-ac22-03b436bf80d7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		formatString: 0
+		lineageTag: 559da70b-61a1-4d29-ba3c-d3b709542561
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha
+		isKey
+		formatString: Short Date
+		lineageTag: 4b9f4736-7533-42ba-9506-06f3d7929999
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fecha]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dia
+		formatString: 0
+		lineageTag: 4d1a5b4e-91e9-4b34-b2a4-ca575d8021c6
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Dia]
+
+		annotation SummarizationSetBy = Automatic
+
+	column NomMes
+		lineageTag: c372bb4d-1731-4ccf-8b95-cb2057192e46
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [NomMes]
+		sortByColumn: Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Periodo
+		lineageTag: a21048d3-33c9-44ef-87a6-b1e7fd4b47e4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Periodo]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dia_Sem
+		lineageTag: 139866eb-2a14-47ba-9db7-f88edf5eb842
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dia_Sem]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dia_Sem_Num
+		formatString: 0
+		lineageTag: 677ac91b-e06a-49ee-b72a-dc65d643b8c1
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Dia_Sem_Num]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		lineageTag: c7afd41a-4a16-408d-9c4d-6ff1f35fc6be
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Trimestre]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesCorto
+		lineageTag: 03b08967-2ce9-4d9b-9a5a-efa6c3d071cd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MesCorto]
+		sortByColumn: Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dia_Sem_corto
+		lineageTag: 6a799b99-9a0c-4eb7-b5bb-04b545eab9a3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dia_Sem_corto]
+
+		annotation SummarizationSetBy = Automatic
+
+	column NomMes_corto
+		lineageTag: 719fd590-87e5-41e3-81f3-53987cb40bf8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [NomMes_corto]
+		sortByColumn: MesCorto
+
+		annotation SummarizationSetBy = Automatic
+
+	partition tbcalendario = calculated
+		mode: import
+		source = ```
+				
+				    var fecha_max = MAX(Fact_Sales[Date])
+				    var fecha_min = MIN(Fact_Sales[Date])
+				RETURN
+				ADDCOLUMNS(
+				    SELECTCOLUMNS(
+				        CALENDAR(fecha_min,fecha_max),
+				        "Fecha", [Date]
+				    ),
+				    "Año", YEAR([Fecha]),
+				    "Mes", MONTH([Fecha]),
+				    "Dia", DAY([Fecha]),
+				    "NomMes", FORMAT([Fecha],"MMMM"),
+				    "MesCorto", FORMAT([Fecha],"MMM"),
+				    "Periodo", FORMAT([Fecha],"YYYYMM"),
+				    "Dia_Sem", FORMAT([Fecha],"DDDD"),
+				    "Dia_Sem_corto", UPPER(LEFT(FORMAT([Fecha],"dddd"),1)),
+				    "Dia_Sem_Num", WEEKDAY([Fecha],2),
+				    "Trimestre", "T" & QUARTER([Fecha]),
+				    "NomMes_corto",
+				    SWITCH(MONTH([Fecha]),
+				        1,"E",
+				        2,"F",
+				        3,"M" & UNICHAR(8203),   -- marzo
+				        4,"A" & UNICHAR(8203),   -- abril
+				        5,"M" & UNICHAR(8204),   -- mayo
+				        6,"J" & UNICHAR(8203),   -- junio
+				        7,"J" & UNICHAR(8204),   -- julio
+				        8,"A" & UNICHAR(8204),   -- agosto
+				        9,"S",
+				        10,"O",
+				        11,"N",
+				        12,"D"
+				    )
+				)
+				```
+
+	annotation PBI_Id = 55b02df5c4f241ea94ccd7952286e488
+

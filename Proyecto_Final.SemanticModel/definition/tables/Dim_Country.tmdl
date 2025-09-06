@@ -1,0 +1,55 @@
+table Dim_Country
+	lineageTag: c7f6cdb1-67b4-48d8-a008-33c779231fed
+
+	column ID_pais
+		dataType: int64
+		formatString: 0
+		lineageTag: 954e2cd2-ff58-4b10-b842-39d628561e78
+		summarizeBy: none
+		sourceColumn: ID_pais
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pais
+		dataType: string
+		lineageTag: 6d5a2969-eadc-4bbc-a5d1-a856c32bfa59
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Pais
+
+		annotation SummarizationSetBy = Automatic
+
+	column Región
+		dataType: string
+		lineageTag: c2442858-5113-4609-a1c5-2b5cde955fb7
+		dataCategory: Continent
+		summarizeBy: none
+		sourceColumn: Región
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pais2
+		dataType: string
+		lineageTag: 0b6501b8-1bf8-49db-9a4f-3aebdc9288c5
+		summarizeBy: none
+		sourceColumn: Pais2
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Country = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents("C:\Users\USER\OneDrive\Desktop\Proyectos\Power BI\Clases\Clase1\Archivos\Dim_Country.csv"),[Delimiter=";", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"ID_pais", Int64.Type}, {"Pais", type text}, {"Región", type text}}),
+				    #"Columna duplicada" = Table.DuplicateColumn(#"Tipo cambiado", "Pais", "Pais - Copia"),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columna duplicada",{{"Pais - Copia", "Pais2"}}),
+				    #"Valor reemplazado" = Table.ReplaceValue(#"Columnas con nombre cambiado","United States of America","USA",Replacer.ReplaceText,{"Pais2"})
+				in
+				    #"Valor reemplazado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

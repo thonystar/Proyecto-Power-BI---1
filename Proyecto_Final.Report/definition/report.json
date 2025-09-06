@@ -1,0 +1,162 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY24SU10",
+      "reportVersionAtImport": {
+        "visual": "1.8.95",
+        "report": "2.0.95",
+        "page": "1.3.95"
+      },
+      "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "AccessibleNeutral",
+      "reportVersionAtImport": {
+        "visual": "2.1.0",
+        "report": "2.1.0",
+        "page": "2.0.0"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "publicCustomVisuals": [
+    "PBI_CV_9272D058_BEA0_476A_B090_A712545F92FA",
+    "powerKPI462CE5C2666F4EC8A8BDD7E5587320A3",
+    "kpiTicker492C9305B9464241B52382527F977DE1",
+    "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+  ],
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "CY24SU10",
+          "path": "BaseThemes/CY24SU10.json",
+          "type": "BaseTheme"
+        },
+        {
+          "name": "AccessibleNeutral",
+          "path": "BuiltInThemes/AccessibleNeutral.json",
+          "type": "CustomTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "mundi40468365769426695.json",
+          "path": "mundi40468365769426695.json",
+          "type": "ShapeMap"
+        },
+        {
+          "name": "filtrar6011428977026608.png",
+          "path": "filtrar6011428977026608.png",
+          "type": "Image"
+        },
+        {
+          "name": "Slide_16_9_-_1_(1)21560755935945086.png",
+          "path": "Slide_16_9_-_1_(1)21560755935945086.png",
+          "type": "Image"
+        },
+        {
+          "name": "cambiar9640772088737615.png",
+          "path": "cambiar9640772088737615.png",
+          "type": "Image"
+        },
+        {
+          "name": "cambiar_(1)47658629919605255.png",
+          "path": "cambiar_(1)47658629919605255.png",
+          "type": "Image"
+        },
+        {
+          "name": "usuario_(1)7811693412817167.png",
+          "path": "usuario_(1)7811693412817167.png",
+          "type": "Image"
+        },
+        {
+          "name": "bloques5233156030602573.png",
+          "path": "bloques5233156030602573.png",
+          "type": "Image"
+        },
+        {
+          "name": "marcador-de-ubicacion34351963387635853.png",
+          "path": "marcador-de-ubicacion34351963387635853.png",
+          "type": "Image"
+        },
+        {
+          "name": "customer-review7240046205420412.png",
+          "path": "customer-review7240046205420412.png",
+          "type": "Image"
+        },
+        {
+          "name": "pago47796820065935985.png",
+          "path": "pago47796820065935985.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sin_t_tulo055744385471312774.png",
+          "path": "Sin_t_tulo055744385471312774.png",
+          "type": "Image"
+        },
+        {
+          "name": "Pagina25724037524704397.png",
+          "path": "Pagina25724037524704397.png",
+          "type": "Image"
+        },
+        {
+          "name": "Pagina345675773560176236.png",
+          "path": "Pagina345675773560176236.png",
+          "type": "Image"
+        },
+        {
+          "name": "Pagina410272089144863072.png",
+          "path": "Pagina410272089144863072.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "allowInlineExploration": true,
+    "useEnhancedTooltips": true,
+    "useDefaultAggregateDisplayName": true,
+    "customMemoryLimit": "1048576",
+    "customTimeoutLimit": "225"
+  }
+}

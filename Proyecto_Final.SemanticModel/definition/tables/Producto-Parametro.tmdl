@@ -1,0 +1,45 @@
+table Producto-Parametro
+	lineageTag: 4543ce10-b8b0-47c6-91ce-3d4a059331ee
+
+	column Parámetro
+		lineageTag: efd13071-378b-4e78-b4f2-d8b160e728de
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parámetro Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Parámetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Campos'
+		lineageTag: 1eafb20c-4546-4770-b4fe-e0aa3891c74e
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parámetro Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parámetro Orden'
+		formatString: 0
+		lineageTag: a33319d3-ebf3-4380-a571-23fbb3c0686d
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Producto-Parametro = calculated
+		mode: import
+		source =
+				{
+				    ("Producto", NAMEOF('Dim_producto'[Producto]), 0)
+				}
+
+	annotation PBI_Id = fe22ea70d5014021a9faa55dd4ad0455
+

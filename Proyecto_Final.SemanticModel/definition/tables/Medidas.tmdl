@@ -1,0 +1,1226 @@
+table Medidas
+	lineageTag: 4ef79971-26c1-4f3f-a3b6-1eb690c71745
+
+	measure ventas_actual = ```
+			
+			    var ventas = SUM(Fact_Sales[Gross Sales])
+			RETURN
+			    ventas
+			```
+		displayFolder: Ventas Brutas
+		lineageTag: 4651ad5b-d1db-421f-959f-a5e3748826c8
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Ventas = ```
+			
+			    SUMX(
+			        Fact_Sales,
+			        Fact_Sales[Units Sold] * Fact_Sales[Sale Price]
+			    )
+			```
+		formatString: #,0.0
+		displayFolder: Ventas Brutas
+		lineageTag: 138d6cda-b8dc-4512-9c84-475bff12b889
+
+		changedProperty = IsHidden
+
+	measure 'Ventas LY' = ```
+			
+			    CALCULATE(
+			        [Ventas],
+			        DATEADD(
+			            tbcalendario[Fecha],
+			            -1,
+			            YEAR
+			        )
+			    )
+			```
+		displayFolder: Ventas Brutas
+		lineageTag: 074c4569-5101-4cdc-b200-4ff4a140dc27
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Ventas YoY %' = ```
+			
+			    DIVIDE(
+			        [Ventas] - ABS([Ventas LY]),
+			        ABS([Ventas LY])
+			    )
+			```
+		formatString: 0\ %;-0\ %;0\ %
+		displayFolder: Ventas Brutas
+		lineageTag: 69939af9-7f88-4931-bb6f-5c426e8e6def
+
+		changedProperty = IsHidden
+
+	measure 'Cantidad Vendida' = SUM(Fact_Sales[Units Sold])
+		displayFolder: Cantidad Vendida
+		lineageTag: b5b6344b-8e79-4e2b-9210-44213ac26cd4
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Costo = ```
+			SUMX(
+			    Fact_Sales, 
+			    Fact_Sales[Units Sold] * RELATED(Dim_producto[Precio_fabricación.2])
+			)
+			```
+		displayFolder: Costo
+		lineageTag: bfc7f10d-2ddf-4724-bc27-a30b08f10623
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Costo2 = SUM(Fact_Sales[COGS])
+		displayFolder: Costo
+		lineageTag: a047a88c-7fa0-448d-82d9-02113bcd94cb
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Margen = [Ventas] - [Costo]
+		formatString: 0
+		displayFolder: Otros
+		lineageTag: acb3f735-31c6-45cc-8d1b-cf09ebf4a701
+
+		changedProperty = IsHidden
+
+	measure Margen2 = [Ventas] - [Costo2]
+		displayFolder: Otros
+		lineageTag: e5210d02-fe56-421f-aae4-a46d220dce74
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Participacion_Parametro = ```
+			
+			    DIVIDE(
+			        [ValorParametro],
+			        CALCULATE(
+			            [ValorParametro],
+			            ALL(Fact_Sales)
+			        )
+			    )
+			```
+		displayFolder: Metas
+		lineageTag: 263ff9a4-4d06-4e04-99ec-e91a926b5d39
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Participación por Región %' =
+			
+			DIVIDE(
+			    [Ventas],
+			    CALCULATE([Ventas], ALLEXCEPT(Dim_Country, Dim_Country[Región]))
+			)
+		displayFolder: Otros
+		lineageTag: ed94e53c-d32b-42c2-b6d7-b89a1531062c
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Cantidad YoY' = ```
+			CALCULATE( 
+			    [Cantidad Vendida],
+			    DATEADD(
+			        tbcalendario[Fecha],
+			        -1,
+			        YEAR
+			    )
+			)
+			```
+		formatString: 0
+		displayFolder: Cantidad Vendida
+		lineageTag: 1f315629-332c-4a14-9427-ca62db0f43e4
+
+		changedProperty = IsHidden
+
+	measure 'Cantidad2 YoY' = CALCULATE([Cantidad Vendida], SAMEPERIODLASTYEAR(tbcalendario[Fecha]))
+		formatString: 0
+		displayFolder: Cantidad Vendida
+		lineageTag: 11d6fe20-831c-482f-a77b-aacbce3b201f
+
+		changedProperty = IsHidden
+
+	measure 'Var Cantidad %' = DIVIDE([Cantidad Vendida] - ABS([Cantidad YoY]), ABS([Cantidad YoY]))
+		displayFolder: Cantidad Vendida
+		lineageTag: fdc74098-344e-47c7-9b6f-4f2aea6ec15f
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Color Cantidad' =
+			
+			VAR valor = [Var Cantidad %]
+			RETURN
+			SWITCH(TRUE(),
+			    ISBLANK(Valor), "#808080", --Color gris
+			    Valor >= 0.6, "#72B360", -- verde fosfo
+			    Valor >= 0.3, "#FFD700", -- amarillito
+			    Valor < 0.3, "#FF5C5C", -- rojo
+			    "#000000" -- negro
+			)
+		displayFolder: Formato
+		lineageTag: 7ef2e9b4-18a8-4db8-805e-84a02f642503
+
+		changedProperty = IsHidden
+
+	measure 'Texto Var Cantidad' = ```
+			
+			-- comentario 
+			VAR Valor = [Var Cantidad %]
+			RETURN
+			"YoY: " & 
+			FORMAT(Valor, "0%") & " " &
+			SWITCH(
+			    TRUE(),
+			    Valor > 0, UNICHAR(9650),   -- ▲ Flecha arriba
+			    Valor < 0, UNICHAR(9660),   -- ▼ Flecha abajo
+			    UNICHAR(9654)               -- ► Flecha lateral si es 0
+			)
+			```
+		displayFolder: Formato
+		lineageTag: b6e66c84-f884-413c-aac9-352f73b20c74
+
+		changedProperty = IsHidden
+
+	measure 'Meta Cantidad' = SUM('Metas Unidades'[Meta])
+		formatString: 0
+		displayFolder: Metas
+		lineageTag: f217f479-0f4b-463c-8d47-bf390a17c9e3
+
+		changedProperty = IsHidden
+
+	measure 'Progreso Cantidad' = DIVIDE([Cantidad Vendida], [Meta Cantidad],0)
+		displayFolder: Metas
+		lineageTag: 91a31059-f99c-4a60-99c6-eb552b358cac
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Resto Cantidad' = MAX(0, 1-[Progreso Cantidad])
+		displayFolder: Metas
+		lineageTag: 6b17afc2-d166-4d57-90c7-76a50a60647b
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Ventas YoY2' = CALCULATE([Ventas], SAMEPERIODLASTYEAR(tbcalendario[Fecha]))
+		formatString: 0
+		displayFolder: Ventas Brutas
+		lineageTag: d9bf7f09-094e-459a-83db-a34956ad100d
+
+		changedProperty = IsHidden
+
+	measure 'Texto Var Ventas' = ```
+			
+			VAR valor = [Ventas YoY %]
+			RETURN
+			"YoY: " & 
+			FORMAT(valor,"0%") & " " & 
+			    SWITCH(TRUE(),
+			        valor > 0, UNICHAR(9650),
+			        valor < 0, UNICHAR(9660),
+			        UNICHAR(9654)
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: a67e7feb-4c9b-4e38-bf54-78af503f86cc
+
+		changedProperty = IsHidden
+
+	measure 'Color Ventas Brutas' =
+			
+			VAR valor_ventas = [Ventas YoY %]
+			RETURN
+			SWITCH(TRUE(),
+			    ISBLANK(valor_ventas), "#808080",
+			    valor_ventas >= 0.5, "#72B360",
+			    valor_ventas >= 0.3, "#FFD700",
+			    valor_ventas <= 0.29, "#FF5C5C",
+			    "#000000"
+			)
+		displayFolder: Formato
+		lineageTag: 719c109c-0ef7-4e85-94e5-6bf775a8c72c
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Netas' = SUM(Fact_Sales[Ganancia])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Ventas Netas
+		lineageTag: 0898add0-96bc-4e54-b064-3eb10807e858
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Netas YoY' = ```
+			
+			    CALCULATE(
+			            [Ventas Netas],
+			            SAMEPERIODLASTYEAR(tbcalendario[Fecha])
+			    )
+			```
+		displayFolder: Ventas Netas
+		lineageTag: 929a01c8-b19c-4cce-b6a5-c7d5935488e0
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Var Ventas Netas' = ```
+			
+			    DIVIDE([Ventas Netas] - ABS([Ventas Netas YoY]), ABS([Ventas Netas YoY]))
+			```
+		formatString: 0\ %;-0\ %;0\ %
+		displayFolder: Ventas Netas
+		lineageTag: 1d65bf60-75bd-4cf7-aa71-1120b419544d
+
+		changedProperty = IsHidden
+
+	measure 'Color Ventas Netas' =
+			
+			VAR valor_ventas = [Var Ventas Netas]
+			RETURN
+			SWITCH(TRUE(),
+			    ISBLANK(valor_ventas), "#808080",
+			    valor_ventas >= 0.5, "#72B360",
+			    valor_ventas >= 0.3, "#FFD700",
+			    valor_ventas <= 0.29, "#FF5C5C",
+			    "#000000"
+			)
+		displayFolder: Formato
+		lineageTag: 32277438-3f4a-42f1-ba56-d76481d38a63
+
+		changedProperty = IsHidden
+
+	measure 'Texto Var Ventas Netas' = ```
+			
+			VAR valor = [Var Ventas Netas]
+			RETURN
+			"YoY: " & 
+			FORMAT(valor,"0%") & " " & 
+			    SWITCH(TRUE(),
+			        valor > 0, UNICHAR(9650),
+			        valor < 0, UNICHAR(9660),
+			        UNICHAR(9654)
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: 14147cbd-0bb2-438b-a257-df51d2249784
+
+		changedProperty = IsHidden
+
+	measure 'Metas Ventas' = SUM('Metas Ventas'[Meta])
+		formatString: 0
+		displayFolder: Metas
+		lineageTag: 6afbf236-b3be-4f80-8dd2-4bf89502f51a
+
+		changedProperty = IsHidden
+
+	measure 'Progreso Ventas' = DIVIDE([Ventas Netas], [Metas Ventas], 0)
+		displayFolder: Metas
+		lineageTag: 7b1ed1cc-6ebe-41ae-ac49-40b3d154ec92
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Resto Ventas' = MAX(0, 1- [Progreso Ventas])
+		displayFolder: Metas
+		lineageTag: 26599958-83cc-478d-b1aa-5e11a65cbf42
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Transacciones = COUNT(Fact_Sales[ID Transacción])
+		formatString: 0
+		displayFolder: Transacciones
+		lineageTag: 5136eaec-e9e4-4fd4-9ea2-1537d722406e
+
+		changedProperty = IsHidden
+
+	measure 'Transaccion YoY' = CALCULATE([Transacciones], PARALLELPERIOD(tbcalendario[Fecha], -1, YEAR))
+		formatString: 0
+		displayFolder: Transacciones
+		lineageTag: db59f532-a083-4f91-a6de-826dbf4f2d63
+
+		changedProperty = IsHidden
+
+	measure 'Var Transacciones' = DIVIDE([Transacciones] - [Transaccion YoY], [Transaccion YoY])
+		displayFolder: Transacciones
+		lineageTag: e22a89b6-b722-412d-a167-784cfa3fae5b
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Destino = 700
+		formatString: 0
+		displayFolder: Transacciones
+		lineageTag: fbd512fd-0d54-4448-b220-24cef4a7baf0
+
+		changedProperty = IsHidden
+
+	measure 'Valor Max' = 1000
+		formatString: 0
+		displayFolder: Transacciones
+		lineageTag: c7bbc1e0-42c5-4af1-b1b8-92ea8cea5d41
+
+		changedProperty = IsHidden
+
+	measure 'Color Transaccion' =
+			
+			VAR valor = [Var Transacciones]
+			RETURN
+			SWITCH(TRUE(),
+			    ISBLANK(Valor), "#808080", --Color gris
+			    Valor >= 0.6, "#72B360", -- verde fosfo
+			    Valor >= 0.3, "#FFD700", -- amarillito
+			    Valor < 0.3, "#FF5C5C", -- rojo
+			    "#000000" -- negro
+			)
+		displayFolder: Formato
+		lineageTag: d92c4f7c-6574-423f-a8c1-5e518582e717
+
+		changedProperty = IsHidden
+
+	measure 'Texto Var Transaccion' = ```
+			
+			VAR Valor = [Var Transacciones]
+			RETURN
+			"YoY: " & 
+			FORMAT(Valor, "0%") & " " &
+			SWITCH(
+			    TRUE(),
+			    Valor > 0, UNICHAR(9650),   -- ▲ Flecha arriba
+			    Valor < 0, UNICHAR(9660),   -- ▼ Flecha abajo
+			    UNICHAR(9654)               -- ► Flecha lateral si es 0
+			)
+			```
+		displayFolder: Formato
+		lineageTag: b547e693-7c80-46d8-a3c8-6a6a06be61e9
+
+		changedProperty = IsHidden
+
+	measure 'Ultima Valor Parametro' = ```
+			
+			VAR ult_valor =
+			    CALCULATE (
+			        MAX ( tbcalendario[Fecha] ),
+			        FILTER ( ALLSELECTED ( tbcalendario[Fecha] ), NOT ISBLANK ( [ValorParametro] ) )
+			    )
+			VAR k =
+			    SELECTEDVALUE ( 'Parametro-Medidas'[Parámetro Orden] )
+			RETURN
+			    SWITCH (
+			        k,
+			        0,
+			            CALCULATE (
+			                " S/ " & FORMAT ( DIVIDE ( [ValorParametro], 1000000 ), "0.0" ) & " M",
+			                tbcalendario[Fecha] = ult_valor
+			            ),
+			        1,
+			            CALCULATE (
+			                " S/ " & FORMAT ( DIVIDE ( [ValorParametro], 1000000 ), "0.0" ) & " M",
+			                tbcalendario[Fecha] = ult_valor
+			            ),
+			        2,
+			            CALCULATE (
+			                " S/ " & FORMAT ( DIVIDE ( [ValorParametro], 1000 ), "0.0" ) & " K",
+			                tbcalendario[Fecha] = ult_valor
+			            )
+			    )
+			
+			        
+			```
+		displayFolder: Ventas Brutas
+		lineageTag: 4998cd53-6c3a-407a-a8c9-9b348f21f3d3
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Bruta Formato 1' =
+			
+			VAR v   = [Ventas]
+			VAR yoy = [Ventas YoY %]
+			RETURN
+			FORMAT( DIVIDE(v, 1000000), "0.0" ) & "M"
+		displayFolder: Ventas Brutas
+		lineageTag: 9e6e03fd-6607-4ce3-bad1-4ab194be14c2
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Bruta Formato 2' =
+			
+			var yoy = [Ventas YoY %]
+			RETURN
+			IF(
+			    NOT ISBLANK(yoy),
+			    FORMAT(yoy, "0%") & " " &
+			    SWITCH(TRUE(), yoy>0, UNICHAR(9650), yoy<0, UNICHAR(9660), UNICHAR(9654))
+			)
+		displayFolder: Ventas Brutas
+		lineageTag: f71c3a29-e533-439b-8b17-06f5684b24ec
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Producto' = CALCULATE([Ventas], ALL(Dim_producto))
+		formatString: 0
+		displayFolder: Ventas Brutas
+		lineageTag: a722e5c4-6c6e-4713-a331-f8521f26d7f6
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Brutas Francia' = ```
+			
+			    CALCULATE([Ventas], Dim_Country[Pais] = "France")
+			```
+		formatString: #,0
+		displayFolder: Ventas Brutas por Paises
+		lineageTag: f2247526-e274-4f32-8bc9-830a1e7d59ba
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Por Mes' = ```
+			CALCULATE([Ventas], 
+			DATEADD(tbcalendario[Fecha], -1, MONTH))
+			```
+		formatString: 0
+		displayFolder: Ventas Brutas por Paises
+		lineageTag: 277ad7da-5df7-47b4-89dc-777b54cfe12c
+
+		changedProperty = IsHidden
+
+	measure 'Titulo Ventas Brutas - Parametro' = ```
+			
+			VAR texto_fijo = "por"
+			VAR texto_variable_categoria = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Categorias'[Parámetro Orden]) = 0, "Producto",
+			        SELECTEDVALUE('Categorias'[Parámetro Orden]) = 1, "Segmento"
+			    )
+			VAR texto_variable_medida = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 0, "Ventas Brutas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 1, "Ventas Netas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 2, "Cantidad Vendida"
+			    )
+			RETURN
+			    texto_variable_medida & " " & texto_fijo & " " &texto_variable_categoria 
+			```
+		displayFolder: Formato
+		lineageTag: 74d7eae0-e287-423d-80c1-76b07debed79
+
+		changedProperty = IsHidden
+
+	measure 'Subtitulo Ventas Brutas Tendencias' = ```
+			
+			VAR texto_fijo = "Por"
+			VAR texto_variable = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Categorias'[Parámetro Orden]) = 0, "Producto",
+			        SELECTEDVALUE('Categorias'[Parámetro Orden]) = 1, "Segmento"
+			    )
+			RETURN
+			    texto_fijo & " " & texto_variable
+			```
+		displayFolder: Formato
+		lineageTag: 77cd8c6c-79f1-4b8f-be8c-cff6fb78ce1f
+
+		changedProperty = IsHidden
+
+	measure 'Color Ventas Brutas2' =
+			
+			VAR valor_ventas = [Ventas YoY %]
+			RETURN
+			SWITCH(TRUE(),
+			    ISBLANK(valor_ventas), "#808080",
+			    valor_ventas > 0, "#72B360",
+			    valor_ventas < 0, "#FF5C5C",
+			    "#000000"
+			)
+		displayFolder: Formato
+		lineageTag: 1bf4b83b-6f88-427e-ad97-35fa94948f33
+
+		changedProperty = IsHidden
+
+	measure 'Titulo Region' = ```
+			
+			    VAR titulo_constante = "[Top 5]"
+			    VAR titulo_variable = 
+			        SWITCH(
+			            TRUE(),
+			            SELECTEDVALUE(Regiones[Parámetro Orden]) = 0,"País",
+			            SELECTEDVALUE(Regiones[Parámetro Orden]) = 1, "Región"
+			        )
+			    RETURN
+			        titulo_variable & " " & titulo_constante
+			```
+		displayFolder: Formato
+		lineageTag: 87bdd74f-0cb0-4399-b5c8-5d8eca8b389b
+
+		changedProperty = IsHidden
+
+	measure ValorParametro =
+			
+			VAR k = SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])
+			RETURN
+			SWITCH(
+			    k,
+			    0, [Ventas],
+			    2, [Cantidad Vendida],
+			    1, [Ventas Netas],
+			    BLANK()
+			)
+		formatString: #,0
+		lineageTag: 4df3c3da-8ea9-406f-8476-cdd9bd842749
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Bruta Formato 1 Parametro' = ```
+			
+			VAR v   = [ValorParametro]
+			VAR yoy = CALCULATE([ValorParametro], DATEADD(tbcalendario[Fecha], -1, YEAR))
+			VAR k = SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])
+			RETURN
+			SWITCH(k,
+			    0, FORMAT( DIVIDE(v, 1000000), "0.0" )& "M",
+			    1, FORMAT( DIVIDE(v, 1000000), "0.0" ) & "M",
+			    2, FORMAT( DIVIDE(v, 1000), "0.0" ) & "K"
+			)
+			
+			```
+		displayFolder: Ventas Brutas
+		lineageTag: 20d099b7-6ded-49ea-87a3-31d1282070ea
+
+		changedProperty = IsHidden
+
+	measure 'Ventas Bruta Formato 2 Parametro' = ```
+			
+			var yoy = 
+			   DIVIDE(
+			        [ValorParametro] - ABS([ValorParametroAnt]), ABS([ValorParametroAnt]))
+			RETURN
+			IF(
+			    NOT ISBLANK(yoy),
+			    FORMAT(yoy, "0%") & " " &
+			    SWITCH(TRUE(), yoy>0, UNICHAR(9650), yoy<0, UNICHAR(9660), UNICHAR(9654))
+			)
+			```
+		displayFolder: Ventas Brutas
+		lineageTag: f772b747-d82a-41c3-880a-3728b7b4cc44
+
+		changedProperty = IsHidden
+
+	measure 'Color Parametro' = ```
+			
+			    var k = SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])
+			RETURN
+			    SWITCH(
+			        k,
+			        0, IF([Ventas]> 0, "#72B360", "#D64331"),
+			        1, IF([Ventas Netas] > 0,"#72B360", "#D64331"),
+			        2, IF([Cantidad Vendida] > 0,"#72B360", "#D64331")
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: 71275d4c-3643-4066-953b-9ee1574f62b4
+
+		changedProperty = IsHidden
+
+	measure 'Titulo Mapa Parametro' = ```
+			
+			    var valor_constante = "por Pais"
+			    var valor_variable = 
+			        SWITCH(TRUE(),
+			            SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 0, "Ventas Brutas",
+			            SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 1, "Ventas Netas",
+			            SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 2, "Cantidad Vendida"
+			        )
+			RETURN
+			    valor_variable & " " & valor_constante
+			```
+		displayFolder: Formato
+		lineageTag: 693c029e-2f6b-4b4b-8674-51fafa39cbdc
+
+		changedProperty = IsHidden
+
+	measure 'Valores Anteriores Parametro' = ```
+			
+			    var y = [ValorParametro]
+			    var yoy = CALCULATE([ValorParametro], 
+			        DATEADD(tbcalendario[Fecha], -1, YEAR))
+			RETURN
+			    yoy
+			```
+		displayFolder: Ventas Brutas
+		lineageTag: c6188c7e-e2af-4030-bfbc-a1b9adc0d518
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Titulo Tendencia Meses' = ```
+			
+			VAR valor_constante = "Tendencia"
+			var valor_variable = SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 0, "Ventas Brutas",
+			    SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 1, "Ventas Netas",
+			    SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 2, "Cantidad Vendida"
+			)
+			RETURN
+			     valor_variable & " " & valor_constante 
+			
+			```
+		displayFolder: Formato
+		lineageTag: 82989b88-4e2d-41ac-b758-1722dccfcbc7
+
+		changedProperty = IsHidden
+
+	measure 'Titulo Tendencia Categorias' = ```
+			
+			VAR texto_fijo = "Tendencia"
+			VAR texto_variable = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 0, "Ventas Brutas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 1, "Ventas Netas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 2, "Cantidad Vendida"
+			    )
+			RETURN
+			    texto_fijo & " " & texto_variable
+			```
+		displayFolder: Formato
+		lineageTag: 9f00983a-9afa-4513-936c-5e9da4982e41
+
+	measure 'Titulo Variable' = ```
+			
+			var variable = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=0,"Ventas Brutas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=1,"Ventas Netas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=2,"Cantidad Vendida"
+			    )
+			RETURN
+			    variable
+			```
+		displayFolder: Formato
+		lineageTag: c80ae767-1797-43c5-a8e5-5c773f5de7cd
+
+	measure ValorParametroAnt = ```
+			
+			VAR k =
+			    IFERROR(SELECTEDVALUE ( 'Parametro-Medidas'[Parámetro Orden] ),0)
+			RETURN
+			    SWITCH (
+			        k,
+			        0, CALCULATE ( [Ventas], DATEADD ( tbcalendario[Fecha], -1, YEAR ) ),
+			        2, CALCULATE ( [Cantidad Vendida], DATEADD ( tbcalendario[Fecha], -1, YEAR ) ),
+			        1, CALCULATE ( [Ventas Netas], DATEADD ( tbcalendario[Fecha], -1, YEAR ) ),
+			        BLANK ()
+			    ) 
+			```
+		formatString: #,0
+		lineageTag: 08187521-8395-4c8f-8ac0-ad0c5c5e33e1
+
+	measure 'Valor Encima' = ```
+			
+			    VAR valor_Actual = [ValorParametro]
+			    VAR valor_ant = [ValorParametroAnt]
+			RETURN
+			    IF(valor_Actual > valor_ant, valor_Actual)
+			```
+		lineageTag: 554cad22-e3f4-4e4c-9fd0-eae330af7da5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Valor Debajo' = ```
+			
+			    VAR valor_Actual = [ValorParametro]
+			    VAR valor_ant = [ValorParametroAnt]
+			RETURN
+			    IF( valor_ant > valor_Actual, valor_ant)
+			```
+		lineageTag: 4b8854a3-a67d-4ba3-89d7-5c1e0601badf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Linea Negativa' = 0
+		formatString: 0
+		lineageTag: 9038a5ac-94fa-4346-bcb2-39675803dc6e
+
+	measure 'Linea Positiva' = 0
+		formatString: 0
+		lineageTag: 80e61a50-c6bf-4572-9669-f16b36aac0b2
+
+	measure '𝗬𝟭 𝗠𝗮𝘅 𝗟𝗶𝗻𝗲' =
+			
+			Maxx(
+			    ALLSELECTED(tbcalendario[Mes]),
+			    [ValorParametro]
+			    )*1
+		lineageTag: ba83f263-440d-4411-af2b-26e0d3571f3c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '𝗬𝟮 𝗠𝗶𝗻 𝗟𝗶𝗻𝗲' =
+			
+			Maxx(
+			    ALLSELECTED(tbcalendario[Mes]),
+			    ABS([ValorParametro]-[ValorParametroAnt])
+			    )*-1
+		lineageTag: e25bd0db-f5de-406b-8da1-e407e20b5535
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '𝗗𝗲𝗯𝗮𝗷𝗼 𝗣𝗬' = ```
+			
+			    IF([ValorParametro] - [ValorParametroAnt] <= 0, [ValorParametro] - [ValorParametroAnt])
+			```
+		lineageTag: 03b2901a-a6a4-418b-951c-4b4e70495bc6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '𝗦𝗼𝗯𝗿𝗲 𝗣𝗬' = ```
+			
+			    IF([ValorParametro]- [ValorParametroAnt] > 0,[ValorParametro] - [ValorParametroAnt])
+			```
+		lineageTag: 76ea8a2e-993b-4b5c-9bff-b534855d8ff6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Valor Parametro Texto' = ```
+			
+			VAR valor_inicial = [ValorParametro]
+			VAR valor_final = ABS([ValorParametro])
+			VAR texto = 
+			SWITCH(
+			    TRUE(),
+			    valor_final >= 1000000, FORMAT(valor_inicial/1000000, "$0.0") & " " & "mill",
+			    valor_final >= 1000, FORMAT(valor_inicial/1000, "$0.0") & " " & "mil."
+			)
+			RETURN
+			    texto
+			```
+		displayFolder: Formato
+		lineageTag: 23d714ef-2317-4b8e-b265-18c96da49b73
+
+	measure 'Texto LY' = ```
+			
+			    VAR Parametro = [ValorParametro]
+			    VAR LY = [ValorParametroAnt]
+			    VAR LY_abs = ABS(LY)
+			    VAR LY_percent = DIVIDE(Parametro - LY_abs, LY_abs, 0)
+			    VAR texto_LY = 
+			        SWITCH(
+			            TRUE(),
+			            LY_abs >= 1000000, FORMAT(LY/1000000, "0.0") & " " & "Mill.",
+			            LY_abs >= 1000, FORMAT(LY/1000, "0.0") & " " & "Mil.",
+			            "0.0"
+			        )
+			    VAR texto_LY_percet = 
+			        SWITCH(
+			            TRUE(),
+			            LY_percent > 0, FORMAT(LY_percent, "0.0%") & " " & UNICHAR(9650),
+			            LY_percent < 0, FORMAT(LY_percent, "0.0%") & " " & UNICHAR(9660),
+			            "0.0%" & " " & UNICHAR(9654)
+			        )
+			RETURN
+			    "LY: " & texto_LY & " " & texto_LY_percet
+			
+			```
+		displayFolder: Formato
+		lineageTag: e6e252ed-7478-486d-b849-0ee3b923e3ca
+
+	measure 'Color Parametro %' = ```
+			
+			    VAR parametro = [ValorParametro]
+			    VAR LY = [ValorParametroAnt]
+			    VAR LY_percent = DIVIDE(parametro - ABS(LY), ABS(LY),0)
+			RETURN
+			        SWITCH(TRUE(),
+			            ISBLANK(LY_percent), "#808080", --Color gris
+			            LY_percent >= 0.6, "#72B360", -- verde fosfo
+			            LY_percent >= 0.3, "#FFD700", -- amarillito
+			            LY_percent < 0.3, "#FF5C5C", -- rojo
+			            "#000000" -- negro
+			        )
+			
+			
+			```
+		displayFolder: Formato
+		lineageTag: 65ce8f1b-5819-45cd-b382-05ebbf4295c0
+
+	measure Top_Paises_Parametro = ```
+			
+			    RANKX(ALL(Dim_Country[Pais]), [ValorParametro],,DESC,Dense)
+			```
+		formatString: 0
+		lineageTag: aa442ad5-16a4-4837-a8ed-861847acb2cb
+
+	measure 'Titulo Variable por Pais' = ```
+			
+			var fijo = "por País"
+			var variable = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=0,"Ventas Brutas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=1,"Ventas Netas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=2,"Cantidad Vendida"
+			    )
+			RETURN
+			    variable & " " & fijo
+			```
+		displayFolder: Formato
+		lineageTag: fe063b8f-987a-4b53-913c-70531d1f1a96
+
+	measure Top_Producto_Parametro = ```
+			
+			    RANKX(ALL(Dim_producto[Producto]),[ValorParametro],,DESC,Dense)
+			```
+		formatString: 0
+		lineageTag: 9d0f8c9d-2d43-4030-9c08-1b9b7d5179ac
+
+	measure 'Titulo Variable por Producto' = ```
+			
+			var fijo = "por Producto"
+			var variable = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=0,"Ventas Brutas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=1,"Ventas Netas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=2,"Cantidad Vendida"
+			    )
+			RETURN
+			    variable & " " & fijo
+			```
+		displayFolder: Formato
+		lineageTag: b93d18d7-80df-4cbb-adbd-922ef6cc9a8f
+
+	measure 'Texto Variacion' = ```
+			
+			    VAR parametro = [ValorParametro]
+			    VAR LY = [ValorParametroAnt]
+			    VAR LY_percent = DIVIDE(parametro - ABS(LY), ABS(LY),0)
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        LY_percent > 0, FORMAT(LY_percent,"0.00%") & " " & UNICHAR(9650),
+			        LY_percent <= 0, FORMAT(LY_percent, "0.00%") & " " & UNICHAR(9660),
+			        "0.00%" & " " & UNICHAR(9654)
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: 1e8cfeee-15d0-4137-86fe-4d92234e962b
+
+	measure 'Valor Producto_Monto' = ```
+			
+			    VAR producto = SELECTEDVALUE(Dim_producto[Producto])
+			    VAR parametro = [ValorParametro]
+			    VAR LY = [ValorParametroAnt]
+			    VAR LY_percent = DIVIDE(parametro - ABS(LY), ABS(LY),0)
+			    VAR LY_percent_formato = 
+			        SWITCH(
+			            TRUE(),
+			            LY_percent > 0, UNICHAR(9650) & FORMAT(LY_percent,"0.00%"),
+			            LY_percent < 0,  UNICHAR(9660) & FORMAT(LY_percent, "0.00%"),
+			            UNICHAR(9654) & FORMAT(LY_percent, "0.00%")
+			        )
+			    VAR LY_formato = 
+			        SWITCH(
+			            TRUE(),
+			            ABS(LY) > 1000000, FORMAT(LY, "$0,.00") & "M",
+			            ABS(LY) > 1000, FORMAT(LY, "$0,.00") & "K",
+			            " "
+			        )
+			RETURN
+			    producto & " " & "|" & " " & LY_formato 
+			
+			```
+		displayFolder: Formato
+		lineageTag: cbe0fc6a-bb0a-49ea-980a-aad50052f684
+
+	measure 'Titulo Variable por Segmento' = ```
+			
+			var fijo = "por Segmento"
+			var variable = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=0,"Ventas Brutas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=1,"Ventas Netas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])=2,"Cantidad Vendida"
+			    )
+			RETURN
+			    variable & " " & fijo
+			```
+		displayFolder: Formato
+		lineageTag: 0cab25b6-b692-47fc-afe4-bad9c26e8e6f
+
+	measure Top_Segmento_Parametro = ```
+			
+			    RANKX(ALL(Dim_segmento), [ValorParametro],, DESC,Dense)
+			    
+			
+			```
+		lineageTag: 9f92bc79-d5fb-4511-9e17-1527c7f81ed8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Texto Ventas Brutas %' = ```
+			
+			    VAR ventasbrutasperct = [Ventas YoY %]
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        ventasbrutasperct > 0, FORMAT(ventasbrutasperct,"0.00%") & " " & UNICHAR(9650),
+			        ventasbrutasperct < 0, FORMAT(ventasbrutasperct, "0.00%") & " " & UNICHAR(9650),
+			        FORMAT(ventasbrutasperct, "0.00%") & " " & UNICHAR(9656)
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: b957fedb-065d-4786-9c1a-e85b83708342
+
+	measure 'Texto Ventas Netas %' = ```
+			
+			    VAR ventasbrutasperct = [Var Ventas Netas]
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        ventasbrutasperct > 0, FORMAT(ventasbrutasperct,"0.00%") & " " & UNICHAR(9650),
+			        ventasbrutasperct < 0, FORMAT(ventasbrutasperct, "0.00%") & " " & UNICHAR(9650),
+			        FORMAT(ventasbrutasperct, "0.00%") & " " & UNICHAR(9656)
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: b3f293fd-cc82-4705-8fe5-953644341f73
+
+	measure 'Texto Cantidad %' = ```
+			
+			    VAR ventasbrutasperct = [Var Cantidad %]
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        ventasbrutasperct > 0, FORMAT(ventasbrutasperct,"0.00%") & " " & UNICHAR(9650),
+			        ventasbrutasperct < 0, FORMAT(ventasbrutasperct, "0.00%") & " " & UNICHAR(9650),
+			        FORMAT(ventasbrutasperct, "0.00%") & " " & UNICHAR(9656)
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: 94b96c2e-0140-4ddf-9963-3a5b1a27c964
+
+	measure 'Color Ventas Brutas %' = ```
+			
+			    VAR parametro = [Ventas YoY %]
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        parametro > 0, "#72B360",
+			        parametro < 0, "#FF5C5C",
+			        "#808080"
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: d7192b08-f9c5-4f44-8630-68594aad1576
+
+	measure 'Color Ventas Netas %' = ```
+			
+			    VAR parametro = [Var Ventas Netas]
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        parametro > 0, "#72B360",
+			        parametro < 0, "#FF5C5C",
+			        "#808080"
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: c1a7f83c-a7e6-4fe0-a0eb-52848745e61e
+
+	measure 'Color cantidad %' = ```
+			
+			    VAR parametro = [Var Cantidad %]
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        parametro > 0, "#72B360",
+			        parametro < 0, "#FF5C5C",
+			        "#808080"
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: b769021b-65bc-40cc-80c5-6691c86391aa
+
+	measure ValorParametroVAR = ```
+			
+			VAR k =
+			    SELECTEDVALUE ( 'Parametro-Medidas'[Parámetro Orden] )
+			VAR ventas_ly = CALCULATE ( [Ventas], DATEADD ( tbcalendario[Fecha], -1, YEAR ))
+			VAR cantidad_ly = CALCULATE ( [Cantidad Vendida], DATEADD ( tbcalendario[Fecha], -1, YEAR ) )
+			VAR ventas_netas_ly = CALCULATE ( [Ventas Netas], DATEADD ( tbcalendario[Fecha], -1, YEAR ) )
+			RETURN
+			    SWITCH (
+			        k,
+			        0, DIVIDE([Ventas] - ABS(ventas_ly), ABS(ventas_ly),0),
+			        2, DIVIDE([Cantidad Vendida] - ABS(cantidad_ly), ABS(cantidad_ly),0),
+			        1, DIVIDE([Ventas Netas] - ABS(ventas_netas_ly), ABS(ventas_netas_ly),0),
+			        BLANK ()
+			    ) 
+			```
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: eae6adb8-15c4-4a59-bd5d-b2309f44d7d4
+
+	measure Diferencia = ```
+			
+			    VAR Diff = [ValorParametro] - ABS([ValorParametroAnt])
+			    --VAR Diff_formato = FORMAT(Diff, "$0.00")
+			RETURN
+			    Diff
+			```
+		formatString: #,0
+		lineageTag: a4d69fe6-1a7a-44e4-85cf-102f6f5e4359
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure ColorDiferencia = ```
+			
+			    VAR diferencia = [Diferencia]
+			RETURN
+			    SWITCH(TRUE(),
+			        diferencia > 0, "#72B360",
+			        diferencia < 0, "#FF5C5C",
+			        "#A19897"
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: 2a309d0a-5660-40fb-851a-43ce8d0726a1
+
+	measure ValorParametroDiferencia =
+			
+			VAR k =
+			    IFERROR(SELECTEDVALUE ( 'Parametro-Medidas'[Parámetro Orden] ),0)
+			RETURN
+			    SWITCH (
+			        k,
+			        0, [Ventas] - ABS(CALCULATE ( [Ventas], DATEADD ( tbcalendario[Fecha], -1, YEAR ) )),
+			        2, [Cantidad Vendida] - ABS(CALCULATE ( [Cantidad Vendida], DATEADD ( tbcalendario[Fecha], -1, YEAR ) )),
+			        1, [Ventas Netas] - ABS(CALCULATE ( [Ventas Netas], DATEADD ( tbcalendario[Fecha], -1, YEAR ) )),
+			        BLANK ()
+			    )
+		lineageTag: b1e8a99c-bb30-4561-ab48-eef2fca802e3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TextoParametroVar = ```
+			
+			    VAR v = [ValorParametroVAR]
+			RETURN
+			    SWITCH(TRUE(),
+			        v > 0, UNICHAR(9650) & FORMAT(v, "0.0%"),
+			        v < 0, UNICHAR(9660) & FORMAT(v, "0.0%"),
+			        UNICHAR(9656) & FORMAT(v, "0.0%")
+			    )
+			```
+		displayFolder: Formato
+		lineageTag: 55fbe1b5-9814-41f3-b408-720b93bf9040
+
+	measure FormatoDiferencia = ```
+			
+			    VAR k = SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden])
+			    VAR ANT = [ValorParametroAnt]
+			    var actual = [ValorParametro]
+			RETURN
+			    SWITCH(k,
+			        0, FORMAT(actual - ANT, "$0,.00"),
+			        1, FORMAT(actual - ant, "$0,.00"),
+			        2, FORMAT(actual - ANT, "#0,00")
+			    )
+			
+			
+			
+			```
+		lineageTag: 623cd4b1-ca6d-4ccb-b425-8ce83707c3c7
+
+	measure Plomo =
+			IF( ISBLANK([ValorParametroAnt]), BLANK(), IF(
+			    [ValorParametro] > [ValorParametroAnt], [ValorParametro]))
+		lineageTag: 023f3eed-ca0e-45b0-9345-1e7e1fc93c6b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Rojo =
+			IF(ISBLANK([ValorParametroAnt]), BLANK(), IF(
+			    [ValorParametroAnt] > [ValorParametro], [ValorParametroAnt], BLANK()))
+		lineageTag: 2a53e07b-09e1-4432-8778-099841272dad
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ColorBarra = ```
+			
+			    var actual = [ValorParametro]
+			    var ant = [ValorParametroAnt]
+			VAR color =
+			    SWITCH(
+			        TRUE(),
+			        ISBLANK(ant), "#F2E4E4",
+			        actual >= ant, "#000000",
+			        ant > actual, "#F27979"
+			    )
+			RETURN
+			    color
+			```
+		displayFolder: Formato
+		lineageTag: d2acf7c1-2070-4e25-9dab-f0450c05b97d
+
+	measure 'Titulo Desglose' = ```
+			
+			VAR texto_fijo = "Desglose de"
+			
+			VAR texto_variable_medida = 
+			    SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 0, "Ventas Brutas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 1, "Ventas Netas",
+			        SELECTEDVALUE('Parametro-Medidas'[Parámetro Orden]) = 2, "Cantidad Vendida"
+			    )
+			RETURN
+			    texto_fijo & " " &  texto_variable_medida 
+			```
+		displayFolder: Formato
+		lineageTag: 699e1357-9896-4854-8747-7edf766860be
+
+	partition Medidas = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+

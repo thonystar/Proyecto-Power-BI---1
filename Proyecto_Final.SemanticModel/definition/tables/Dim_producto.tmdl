@@ -1,0 +1,46 @@
+table Dim_producto
+	lineageTag: 1ca07c06-62e0-4e83-9baf-5054b734dcbe
+
+	column ID_Producto
+		dataType: int64
+		formatString: 0
+		lineageTag: 11df759e-097b-4f10-976b-85c875c734b1
+		summarizeBy: none
+		sourceColumn: ID_Producto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Producto
+		dataType: string
+		lineageTag: 0c55e553-a9e9-4e54-b098-166088a843a6
+		summarizeBy: none
+		sourceColumn: Producto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Precio_fabricación.2'
+		dataType: int64
+		formatString: 0
+		lineageTag: d962d46b-df19-48e9-aaf6-f267cd0914b7
+		summarizeBy: none
+		sourceColumn: Precio_fabricación.2
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_producto = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents("C:\Users\USER\OneDrive\Desktop\Proyectos\Power BI\Clases\Clase1\Archivos\Dim_producto.csv"),[Delimiter=";", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"ID_Producto", Int64.Type}, {"Producto", type text}, {"Precio_fabricación", type text}}),
+				    #"Dividir columna por delimitador" = Table.SplitColumn(#"Tipo cambiado", "Precio_fabricación", Splitter.SplitTextByEachDelimiter({"$"}, QuoteStyle.Csv, false), {"Precio_fabricación.1", "Precio_fabricación.2"}),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Dividir columna por delimitador",{{"Precio_fabricación.1", type text}, {"Precio_fabricación.2", Int64.Type}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado1",{"Precio_fabricación.1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
